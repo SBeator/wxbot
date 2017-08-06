@@ -3,6 +3,8 @@ let { clipboard, nativeImage } = require('electron')
 let { s, sa, delay, download } = require('./util')
 let parseMsg = require('./parseMsg')
 let replyMsg = require('./replyMsg')
+let weather = require('./weather')
+
 
 // 禁用微信网页绑定的beforeunload
 // 导致页面无法正常刷新和关闭
@@ -45,7 +47,12 @@ function enableIntervalReply(msg) {
     sendMessage('行动开始！', user)
     
     setInterval(function () {
-      sendMessage(new Date().toTimeString(), user)
+
+      weather.getWeatherString().then((wealthString) => {
+        sendMessage(wealthString, user)
+      });
+
+      //sendMessage(new Date().toTimeString(), user)
     }, 5000);
   }
 }
@@ -136,6 +143,7 @@ function pasteMsg (opt) {
   }
   if (opt.html) clipboard.writeHtml(opt.html)
   if (opt.text) clipboard.writeText(opt.text)
+
   s('#editArea').focus()
   document.execCommand('paste')
 
