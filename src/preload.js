@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 async function autoReply () {
+
+  keepAlive();
+
   while (true) { // 保持回复消息
     let msg = await detectMsg()
     console.log('解析得到msg', JSON.stringify(msg))
@@ -39,14 +42,10 @@ function enableIntervalReply(msg) {
   if (msg.type === 'text' && msg.text === '开始') {
     let user = msg.from;
 
+    sendMessage('行动开始！', user)
+    
     setInterval(function () {
-      let reply = {
-        text: new Date().toTimeString()
-      }
-
-      selectUser(user)
-      pasteMsg(reply)
-      clickSend(reply)
+      sendMessage(new Date().toTimeString(), user)
     }, 5000);
   }
 }
@@ -101,6 +100,22 @@ function selectUser(username) {
       break;
     }
   }
+}
+
+function sendMessage(messageText, username) {
+  let reply = {
+    text: messageText
+  }
+
+  selectUser(username)
+  pasteMsg(reply)
+  clickSend(reply)
+}
+
+function keepAlive() {
+  setInterval(() => {
+    sendMessage(`Keep alive: ${new Date().toString()}`, "文件传输助手");
+  }, 10 * 60 * 1000);
 }
 
 // 借用clipboard 实现输入文字 更新ng-model=EditAreaCtn
