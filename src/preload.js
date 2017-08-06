@@ -25,11 +25,29 @@ async function autoReply () {
     let reply = await replyMsg(msg)
     console.log('reply', JSON.stringify(reply))
 
+    enableIntervalReply(msg);
+
     if (reply) {
       // continue // test: 不作回复
       pasteMsg(reply)
       await clickSend(reply)
     }
+  }
+}
+
+function enableIntervalReply(msg) {
+  if (msg.type === 'text' && msg.text === '开始') {
+    let user = msg.from;
+
+    setInterval(function () {
+      let reply = {
+        text: new Date().toTimeString()
+      }
+
+      selectUser(user)
+      pasteMsg(reply)
+      clickSend(reply)
+    }, 5000);
   }
 }
 
@@ -69,6 +87,18 @@ async function clickSend (opt) {
       } else {
         break
       }
+    }
+  }
+}
+
+function selectUser(username) {
+  let allUsers = sa(".nickname .nickname_text");
+
+  for (let i = 0; i < allUsers.length; i++) {
+    let user = allUsers[i];
+    if (user.innerText === username) {
+      user.click();
+      break;
     }
   }
 }
